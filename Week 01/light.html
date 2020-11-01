@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>红绿灯</title>
+</head>
+<style>
+    .lamp {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        line-height: 100px;
+        text-align: center;
+        font-size: 54px;
+        color: #655f5f;
+    }
+
+    .red {
+        background: #f90000;
+        border: 1px solid #f90000;
+    }
+
+    .green {
+        background: #7dea70;
+        border: 1px solid #7dea70;
+    }
+
+    .yellow {
+        background: yellow;
+        border: 1px solid yellow;
+    }
+</style>
+
+<body>
+    <div class="lamp"></div>
+</body>
+<script>
+    let lamp = document.querySelector(".lamp");
+    function redLamp() {
+        lamp.classList.add("red");
+        lamp.classList.remove("yellow")
+        lamp.classList.remove("green")
+    }
+    function greenLamp() {
+        lamp.classList.add("green");
+        lamp.classList.remove("yellow")
+        lamp.classList.remove("red")
+    }
+    function yellowLamp() {
+        lamp.classList.add("yellow");
+        lamp.classList.remove("red")
+        lamp.classList.remove("green")
+    }
+    function sleep(t) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, t)
+        })
+    }
+
+    function trafficLights() {
+        greenLamp();
+        countdown(10);
+        sleep(10000).then(() => {
+            yellowLamp();
+            countdown(3);
+            return sleep(3000)
+        }).then(() => {
+            redLamp();
+            countdown(6);
+            return sleep(6000)
+        }).then(trafficLights)
+
+    }
+    function countdown(v) {
+        lamp.innerHTML = v
+        let tmp = setInterval(() => {
+            lamp.innerHTML -= 1;
+            if (lamp.innerHTML == 1) {
+                clearInterval(tmp)
+                tmp = null
+            }
+        }, 1000);
+
+
+    }
+    trafficLights()
+</script>
+
+</html>
