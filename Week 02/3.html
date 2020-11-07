@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寻路算法(广度优先搜索)</title>
+</head>
+<style>
+    #container {
+        width: 701px;
+        line-height: 7px;
+    }
+
+    .cell {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: gray;
+        border-bottom: solid 1px white;
+        border-right: solid 1px white;
+        vertical-align: top;
+    }
+</style>
+
+<body>
+    <div id="container">
+    </div>
+    <button onclick="localStorage['map'] =JSON.stringify(map)">save</button>
+</body>
+<script>
+    //检查localStorage是否有数据，有就是取出来，没有就是新建
+    let map = localStorage["map"] ? JSON.parse(localStorage["map"]) : Array(10000).fill(0);
+    let container = document.getElementById("container");
+    let mousedown = false;
+    let clear = false;
+
+    for (let y = 0; y < 100; y++) {
+        for (let x = 0; x < 100; x++) {
+            //建立100*100个格子
+            let cell = document.createElement("div");
+            cell.classList.add("cell");
+            // cell.innerHTML = x
+            //如果取出来的值是1，就是标注为black颜色，主要是保存之后再取出来时候的渲染
+            if (map[100 * y + x] == 1) {
+                cell.style.background = "black";
+            }
+
+            //监听鼠标左键移动 画地图
+            cell.addEventListener("mousemove", () => {
+                if (mousedown) {
+                    if (clear) {
+                        cell.style.background = "";
+                        map[100 * y + x] = 0
+                    } else {
+                        cell.style.background = "black";
+                        map[100 * y + x] = 1
+                    }
+                }
+            })
+            container.appendChild(cell)
+        }
+    }
+
+    //监听鼠标按下时候，并且如果是邮件按下就是设置clear为true
+    document.addEventListener("mousedown", (e) => {
+        mousedown = true;
+        clear = (e.which === 3)
+    })
+    //监听鼠标抬起时候停止
+    document.addEventListener("mouseup", () => {
+        mousedown = false;
+    })
+    //屏蔽鼠标默认事件
+    document.addEventListener("contextmenu", e => {
+        e.preventDefault();
+    })
+    //广度优先搜索方法
+    async function path(map, start, end) {
+        //设置开始搜索位置
+        var queue = [start];
+        //输入x、y点，先判断是否是超出地图范围
+        //再判断是否已经是1
+        //都不是的情况下设置为 寻路的值 2
+        //并且将位置的x、y存入queue内部
+        async function inster(x, y) {
+            if (x < 0 || x >= 100 || y < 0 || y >= 100) {
+                return;
+            }
+            if (map[y * 100 + x]) {
+                return
+            }
+            await sleep(10)
+            container.children[y * 100 + x].style.background = "lightgreen";
+
+            map[y * 100 + x] = 2
+            queue.push([x, y])
+        }
+
+        while (queue.length) {
+            //删除queue里第一个数值，并且返回第一个值，通过赋值解构将值赋值给xy
+            let [x, y] = queue.shift();
+            console.log(x, y)
+            //判断xy是否已经到end位置，到了就返回true，否则就继续使用inster寻找
+            if (x === end[0] && y === end[1]) {
+                container.children[y * 100 + x].style.background = "red";
+                return true;
+            }
+            await inster(x - 1, y)
+            await inster(x, y - 1)
+            await inster(x + 1, y)
+            await inster(x, y + 1)
+        }
+    }
+
+    //延迟函数
+    function sleep(t) {
+        return new Promise(function (resolve) {
+            setTimeout(resolve, t);
+        })
+    }
+
+    path(map, [0, 0], [50, 50])
+</script>
+
+</html>
