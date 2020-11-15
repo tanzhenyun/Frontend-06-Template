@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    //[ \t]注意是有一个空格的，同时支持空格和\t的形式
+    let regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+    //对上面的正则表达式起的名字存入下面的数组
+    let dictionary = ["Number", "Whitespace", "LineTerminator", "*", "/", "+", "-"];
+    function* tokenize(source) {
+        let result = null;
+        let lastIndex = 0;
+        while (true) {
+            //regexp.lastIndex 用来指定下一次匹配的起始索引
+            lastIndex = regexp.lastIndex;
+            //不断的扫描传入的字符串的匹配情况
+            result = regexp.exec(source);
+            if (!result) break;
+
+            //这里的regexp.lastIndex是指再一次循环检索的起始位置；
+            if (regexp.lastIndex - lastIndex > result[0].length)
+                break
+
+            let token = {
+                type: null,
+                value: null
+            }
+
+            //result数组的长度是比dictionary长度多一的，包含第一个是匹配结果的,所以从第二个开始
+            for (let i = 0; i < dictionary.length; i++) {
+                if (result[i + 1]) {
+                    token.type = dictionary[i]
+                }
+            }
+            token.value = result[0]
+            yield token;
+        }
+        yield {
+            type: "EOF"
+        }
+    }
+    for (let token of tokenize("1024 + 10 * 25")) {
+        console.log(token)
+    }
+</script>
+
+</html>
