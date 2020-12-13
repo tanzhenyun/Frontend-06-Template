@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>练习</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    function test() {
+        let obj = {};
+        obj.age = 18;
+        obj.name = "lisi"
+        return obj
+    }
+
+    var o = {
+        toString() {
+            return "2"
+        },
+        valueOf() {
+            return 1
+        },
+        [Symbol.toPrimitive]() {
+            return 3
+        }
+    }
+    var x = {};
+    console.log("x" + o)
+    // x[o] = 1
+</script>
+
+</html>
