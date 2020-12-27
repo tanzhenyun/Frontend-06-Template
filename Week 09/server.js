@@ -13,13 +13,24 @@ http.createServer((request,response) =>{
         response.setHeader('X-Foo','bar');
         response.writeHead(200,{'Content-Type':'text/plain'});
         response.end(
-`<html>
+`<html maaa=a >
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第九周</title>
+    <style>
+body div #myid{
+    width:100px;
+    background-color:#ff5000;
+}
+body div img{
+    width:30px;
+    background-color:#ff1111;
+}
+    </style>
 </head>
 <body>
+    <div>
+        <img id="myid" />
+        <img />
+    </div>
 </body>
 </html>`);
     })

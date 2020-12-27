@@ -18,7 +18,7 @@ class Request {
         if (this.headers["Content-Type"] === "application/json") {
             this.bodyText = JSON.stringify(this.body);
         } else if (this.headers["Content-Type"] === "application/x-www-form-urlencoded") {
-            this.bodyText = Object.keys(this.body).map(key => `${key} = ${encodeURIComponent(this.body[key])}`).join('&')
+            this.bodyText = Object.keys(this.body).map(key => `${key}=${encodeURIComponent(this.body[key])}`).join('&')
         }
 
         this.headers["Content-Length"] = this.bodyText.length;
@@ -27,7 +27,7 @@ class Request {
     send(connection) {
         return new Promise((resolve, reject) => {
             //.......
-            const parser = new ResponseParser();
+            const parser = new ResponseParser;
             if (connection) {
                 connection.write(this.toString())
             } else {
@@ -41,7 +41,6 @@ class Request {
 
             connection.on('data', (data) => {
                 parser.receive(data.toString());
-                console.log(parser.isFinished)
                 if (parser.isFinished) {
                     resolve(parser.response);
                     connection.end();
@@ -75,7 +74,7 @@ class ResponseParser {
         this.WAITING_BODY = 7;
 
         this.current = this.WAITING_STATUS_LINE;
-        this.statusLIne = "";
+        this.statusLine = "";
         this.headers = {};
         this.headerName = "";
         this.headerValue = "";
@@ -106,7 +105,7 @@ class ResponseParser {
             if (char === '\r') {
                 this.current = this.WAITING_STATUS_LINE_END
             } else {
-                this.statusLIne += char
+                this.statusLine += char
             }
         } else if (this.current === this.WAITING_STATUS_LINE_END) {
             if (char === '\n') {
@@ -217,8 +216,7 @@ void async function () {
 
     let response = await request.send();
 
-    console.log(response)
 
     let dom = parser.parseHTML(response.body);
-
+    console.log(dom)
 }()
